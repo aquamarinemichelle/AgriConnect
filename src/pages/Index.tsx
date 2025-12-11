@@ -26,8 +26,6 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { ref, get } from "firebase/database";
-import { database } from "@/firebase/config";
 
 // Graph components
 const LineGraph = ({ data, color = "bg-blue-500" }: { data: number[], color?: string }) => (
@@ -213,48 +211,28 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const { user, logout } = useAuth();
 
-  // Fetch user data from Firebase Realtime Database
+  // Load user data from auth context
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user?.uid) {
-        setLoading(false);
-        return;
-      }
+    if (!user?.uid) {
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const userRef = ref(database, `farmers/${user.uid}`);
-        const snapshot = await get(userRef);
-        
-        if (snapshot.exists()) {
-          const userDataFromDB = snapshot.val();
-          setUserData({
-            uid: user.uid,
-            ...userDataFromDB
-          });
-        } else {
-          // Fallback to auth user data if no farmer data found
-          setUserData({
-            uid: user.uid,
-            name: user.name || 'User',
-            email: user.email || '',
-            profilePicture: user.profilePicture || ''
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching user data from Firebase:", error);
-        // Fallback to auth context data
-        setUserData({
-          uid: user.uid,
-          name: user.name || 'User',
-          email: user.email || '',
-          profilePicture: user.profilePicture || ''
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
+    // Use data from auth context
+    setUserData({
+      uid: user.uid,
+      name: user.name || 'User',
+      email: user.email || '',
+      phone: user.phone,
+      address: user.address,
+      farmSize: user.farmSize,
+      productionType: user.productionType,
+      crops: user.crops,
+      livestock: user.livestock,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    });
+    setLoading(false);
   }, [user]);
 
   const handleLogout = async () => {
