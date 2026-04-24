@@ -83,7 +83,7 @@ const CropScanner = () => {
 
       console.log('Sending request to backend...');
 
-      const response = await fetch('/api/crop/predict', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/crop/predict`, {
         method: 'POST',
         body: formData,
       });
@@ -144,7 +144,7 @@ const CropScanner = () => {
   // Test backend connection
   const testBackendConnection = async () => {
     try {
-      const response = await fetch('/api/health');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/health`);
       const data = await response.text();
       console.log('Backend health check:', data);
       toast({
